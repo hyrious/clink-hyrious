@@ -3,14 +3,15 @@ os.setalias('el', 'eza -lA --no-quotes $*')
 os.setalias('md', 'bun x @hyrious/marked-cli')
 os.setalias('sp', 'bun x @hyrious/sort-package-json')
 os.setalias('sm', 'smerge .')
--- Sync 'main' to 'origin/main'
-os.setalias('smm', 'git branch -f main origin/main')
-os.setalias('nrb', 'nr build')
+os.setalias('smm', 'git branch -f main origin/main') -- Sync 'main' to 'origin/main'
+os.setenv('NI_DEFAULT_AGENT', 'bun') -- Bun runs faster
+os.setalias('nrb', 'nr build $*')
 
 -- https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/git/git.plugin.zsh
 os.setalias('gl', 'git pull $*')
 os.setalias('gfa', 'git fetch --all --tags --prune --jobs=10')
 os.setalias('gbm', 'git branch --move $*')
+os.setalias('grhh', 'git reset --hard $*')
 os.setalias('gpsup', 'git push --set-upstream origin $(git_current_branch)')
 
 -- Replace '$(git_current_branch)' with the real value.
