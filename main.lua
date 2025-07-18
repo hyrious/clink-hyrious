@@ -1,16 +1,20 @@
+os.setenv('NI_DEFAULT_AGENT', 'bun') -- Bun runs faster
+
 -- $* will be expaneded to rest args
 os.setalias('el', 'eza -lA --no-quotes $*')
+os.setalias('ed', 'esbuild-dev $*')
 os.setalias('md', 'bun x @hyrious/marked-cli $*')
 os.setalias('sp', 'bun x @hyrious/sort-package-json')
 os.setalias('sm', 'smerge .')
 os.setalias('smm', 'git branch -f main origin/main') -- Sync 'main' to 'origin/main'
-os.setenv('NI_DEFAULT_AGENT', 'bun') -- Bun runs faster
 os.setalias('nrb', 'nr build $*')
 os.setalias('bunx', 'bun x $*')
 -- https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/git/git.plugin.zsh
 os.setalias('gl', 'git pull $*')
 os.setalias('gfa', 'git fetch --all --tags --prune --jobs=10')
 os.setalias('gbm', 'git branch --move $*')
+os.setalias('gsw', 'git switch $*')
+os.setalias('gswc', 'git switch --create $*')
 os.setalias('grhh', 'git reset --hard $*')
 os.setalias('gpsup', 'git push --set-upstream origin $(git_current_branch)')
 
