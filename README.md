@@ -15,6 +15,13 @@ Personal [Clink](https://github.com/chrisant996/clink) setup.
 
 Press `Ctrl+X, Ctrl+R` to reload scripts without restart the shell.
 
+## `flexprompt_config.lua`
+
+```lua
+flexprompt.settings.left_prompt = "{histlabel}{cwd}{git}{duration}{time:format=}"
+flexprompt.settings.symbols = { prompt = {"❯"} }
+```
+
 ## License
 
 MIT @ [hyrious](https://github.com/hyrious)
