@@ -20,6 +20,7 @@ os.setalias('gbm', 'git branch --move $*')
 os.setalias('gsw', 'git switch $*')
 os.setalias('gswc', 'git switch --create $*')
 os.setalias('grhh', 'git reset --hard $*')
+os.setalias('gwip', 'git add -A && git commit --no-verify --no-gpg-sign --message "--wip-- [skip ci]"')
 os.setalias('gpsup', 'git push --set-upstream origin $(git_current_branch)')
 
 -- Replace '$(git_current_branch)' with the real value.
