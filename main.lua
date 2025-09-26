@@ -25,22 +25,6 @@ os.setalias('gwip', 'git add -A && git commit --no-verify --no-gpg-sign --messag
 os.setalias('gpsup', 'git push --set-upstream origin $(git_current_branch)')
 
 -- Replace '$(git_current_branch)' with the real value.
--- https://github.com/chrisant996/clink-gizmos/blob/main/command_substitution.lua
-local function git_current_branch()
-  local raw
-  local f = io.popen("git branch --show-current 2>nul")
-  if f then
-    raw = f:read("*a")
-    while true do
-      local t = raw:sub(#raw)
-      if t ~= '\r' or t ~= '\n' then break end
-      raw = raw:sub(1, #raw - 1)
-    end
-    f:close()
-  end
-  return raw or '""'
-end
-
 local function resolve_git_current_branch(line)
   if line == 'gpsup' then line = os.resolvealias(line)[1] end
   local i = 1
@@ -48,6 +32,7 @@ local function resolve_git_current_branch(line)
   local continue
   local var = '$(git_current_branch)'
   local value
+  local first = true
   while true do
     local s = line:find(var, i, true)
     if not s then
@@ -57,7 +42,11 @@ local function resolve_git_current_branch(line)
     result = result..line:sub(i, s - 1)
     i = s + #var
     continue = false
-    value = value or git_current_branch()
+    -- https://github.com/chrisant996/clink-flex-prompt/blob/master/flexprompt.lua
+    if first then
+      value = flexprompt.get_git_branch()
+      first = false
+    end
     if value then
       result = result..value
     end
@@ -66,6 +55,69 @@ local function resolve_git_current_branch(line)
 end
 
 clink.onfilterinput(resolve_git_current_branch)
+
+-- Write '$env:key = expr' to capture stdout of expr.
+local function exec(str)
+  local raw
+  local f = io.popen(str)
+  if f then
+    raw = f:read("*a")
+    while true do
+      local t = raw:sub(#raw)
+      if t ~= '\r' or t ~= '\n' then break end
+      raw = raw:sub(1, #raw - 1)
+    end
+    f:close()
+  end
+  return (raw ~= '') and raw or nil
+end
+
+local function setenv_shortcut(line)
+  local key, expr = line:match("^%s*%$env:(%S+)%s*=%s*(.*)$")
+  if key and key ~= '' and expr and expr ~= '' then
+    local value = exec(expr)
+    if value then
+      print(key .. " = " .. value)
+    else
+      print(key .. " = nil")
+    end
+    os.setenv(key, value)
+    return ''
+  end
+  return nil
+end
+
+clink.onfilterinput(setenv_shortcut)
+
+local setenv_classifier = clink.classifier(50)
+function setenv_classifier:classify(commands)
+  if not commands[1] then return end
+
+  local color = settings.get('color.doskey')
+  if not color or color == '' then return end
+
+  local color_key = settings.get('color.cmd')
+  local color_equal = settings.get('color.suggestion')
+
+  local line_state = commands[1].line_state
+  local classifications = commands[1].classifications
+  local line = line_state:getline()
+
+  if line:match("^%s*%$env:") then
+    local start = line:find("%$env:")
+    classifications:applycolor(start, 5, color, true)
+
+    local key = line:find("[%s=]")
+    if key then
+      classifications:applycolor(start + 5, key - start - 5, color_key, true)
+
+      local equal = line:find("=", key)
+      if equal then
+        classifications:applycolor(equal, 1, color_equal, true)
+      end
+    end
+  end
+end
 
 -- Press Ctrl+K to clear the display (clear all scroll buffer).
 -- It seems simple 'clear-display' does not clear all scroll buffer.
